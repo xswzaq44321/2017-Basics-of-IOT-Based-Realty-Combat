@@ -8,7 +8,7 @@
 
 #define SSID "1scream2.4G"
 #define PASSWD "2017scream"
-#define TCP_IP "192.168.0.33"
+#define TCP_IP "192.168.0.38"
 #define TCP_IP_PHONE "192.168.0.34"
 #define TCP_PORT 5000
 #define ENB 13
@@ -138,10 +138,10 @@ void askPos( void * parameter )
 
       buf[i - 1] = '\0';
       recv_ID = strtok(buf, "|\0");
-      //Serial.print(recv_ID);
-      //Serial.print(":");
+      Serial.print(recv_ID);
+      Serial.print(":");
       recv_buf = strtok(NULL, "|\0");
-//      Serial.println(recv_buf);
+      Serial.println(recv_buf);
       if (strcmp(recv_buf, "Start")==0) {
         timeToGo = true;
       }
@@ -275,7 +275,7 @@ void handleCommand()
       break;
   }
 }*/
-int doIt = 1;
+bool doIt = true;
 
 void loop()
 {
@@ -300,25 +300,27 @@ void loop()
     int theta0 = thetaEnd0 - thetaPos0;
     if(theta0 < -180)
       theta0 += 360;
+    stand(50);
     if(theta0 < 0){
       moving.left.wheel(LEFT_WHEEL_TIME * 60 / 90);
     }else if(theta0 > 0){
       moving.right.wheel(RIGHT_WHEEL_TIME * 60 / 90);
     }
-    doIt = 0;
+    doIt = false;
     return;
   }
 
   static const int StartPosX = MyPosX;
   static const int StartPosY = MyPosY;
-  int LastPosX, LastPosY;
-  float thetaPos, theta, thetaNow, theta2;
-  int VectorX, VectorY;
-  int VectorNowX, VectorNowY;
-  int adjustmentRate;
   static const int EndVectorX = DstPosX - StartPosX;
   static const int EndVectorY = DstPosY - StartPosY;
-  static float thetaEnd = atan2(EndVectorY, EndVectorX) * 180 / PI;
+  static const float thetaEnd = atan2(EndVectorY, EndVectorX) * 180 / PI;
+  float thetaPos, theta, thetaNow, theta2;
+  int VectorX;
+  int VectorY;
+  int LastPosX, LastPosY;
+  int VectorNowX, VectorNowY;
+  int adjustmentRate;
   
   LastPosX = MyPosX;
   LastPosY = MyPosY;
@@ -336,17 +338,17 @@ void loop()
     theta2 += 360;
   if(theta < -180)
     theta += 360;
-  adjustmentRate = asin(32 / sqrt(VectorNowX * VectorNowX + VectorNowY * VectorNowY)) * 180 / PI;
+  adjustmentRate = asin(32 / sqrt(pow(VectorNowX, 2) + pow(VectorNowY, 2))) * 180 / PI;
 
   if(theta < -adjustmentRate){
     moving.left.wheel(50);
   }else if(theta > adjustmentRate){
     moving.right.wheel(50);
-  }else{
-    /*if(theta2 < -2.5){
+  }/*else{
+    if(theta2 < -2){
       moving.left.wheel(10);
-    }else if(theta2 > 2.5){
+    }else if(theta2 > 2){
       moving.right.wheel(10);
-    }*/
-  }
+    }
+  }*/
 }
