@@ -275,6 +275,7 @@ void handleCommand()
       break;
   }
 }*/
+int doIt = 1;
 
 void loop()
 {
@@ -283,22 +284,40 @@ void loop()
     return;
   }
   
-  static int StartPosX = MyPosX;
-  static int StartPosY = MyPosY;
-  if(abs(MyPosX - StartPosX) < MIDWAY && abs(MyPosY - StartPosY) < MIDWAY){
+  static const int InitPosX = MyPosX;
+  static const int InitPosY = MyPosY;
+  if(abs(MyPosX - InitPosX) < MIDWAY && abs(MyPosY - InitPosY) < MIDWAY){
     moving.forward(100);
-    StartPosX = MyPosX;
-    StartPosY = MyPosY;
     return;
   }
-  
+  if(doIt){
+    int VectorX0 = MyPosX - InitPosX;
+    int VectorY0 = MyPosY - InitPosY;
+    int EndVectorX0 = DstPosX - InitPosX;
+    int EndVectorY0 = DstPosY - InitPosY;
+    int thetaEnd0 = atan2(EndVectorY0, EndVectorX0) * 180 / PI;
+    int thetaPos0 = atan2(VectorY0, VectorX0) * 180 / PI;
+    int theta0 = thetaEnd0 - thetaPos0;
+    if(theta0 < -180)
+      theta0 += 360;
+    if(theta0 < 0){
+      moving.left.wheel(LEFT_WHEEL_TIME * 60 / 90);
+    }else if(theta0 > 0){
+      moving.right.wheel(RIGHT_WHEEL_TIME * 60 / 90);
+    }
+    doIt = 0;
+    return;
+  }
+
+  static const int StartPosX = MyPosX;
+  static const int StartPosY = MyPosY;
   int LastPosX, LastPosY;
   float thetaPos, theta, thetaNow, theta2;
   int VectorX, VectorY;
   int VectorNowX, VectorNowY;
   int adjustmentRate;
-  static int EndVectorX = DstPosX - MyPosX;
-  static int EndVectorY = DstPosY - MyPosY;
+  static const int EndVectorX = DstPosX - StartPosX;
+  static const int EndVectorY = DstPosY - StartPosY;
   static float thetaEnd = atan2(EndVectorY, EndVectorX) * 180 / PI;
   
   LastPosX = MyPosX;
@@ -317,8 +336,8 @@ void loop()
     theta2 += 360;
   if(theta < -180)
     theta += 360;
-  adjustmentRate = asin(32 / sqrt(VectorNowX * VectorNowX + VectorNowY * VectorNowY));
-  
+  adjustmentRate = asin(32 / sqrt(VectorNowX * VectorNowX + VectorNowY * VectorNowY)) * 180 / PI;
+
   if(theta < -adjustmentRate){
     moving.left.wheel(50);
   }else if(theta > adjustmentRate){
