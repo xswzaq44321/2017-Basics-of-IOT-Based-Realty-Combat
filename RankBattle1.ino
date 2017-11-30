@@ -300,7 +300,7 @@ void loop()
     int theta0 = thetaEnd0 - thetaPos0;
     if(theta0 < -180)
       theta0 += 360;
-    stand(50);
+    stand(150);
     if(theta0 < 0){
       moving.left.wheel(LEFT_WHEEL_TIME * 60 / 90);
     }else if(theta0 > 0){
@@ -341,14 +341,14 @@ void loop()
   adjustmentRate = asin(32 / sqrt(pow(VectorNowX, 2) + pow(VectorNowY, 2))) * 180 / PI;
 
   if(theta < -adjustmentRate){
-    moving.left.wheel(50);
+    moving.left.wheel(35);
   }else if(theta > adjustmentRate){
-    moving.right.wheel(50);
-  }/*else{
+    moving.right.wheel(35);
+  }else{
     if(theta2 < -2){
-      moving.left.wheel(10);
+      moving.left.wheel(8);
     }else if(theta2 > 2){
-      moving.right.wheel(10);
+      moving.right.wheel(8);
     }
-  }*/
+  }
 }
