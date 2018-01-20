@@ -51,7 +51,6 @@ point Dst1Pos, MyPos, lighthouse[3];
 
 // Pin assignment
 static const uint8_t motorPins[NUM_OF_MOTOR_PIN] = {14, 15, 16, 17};  //  L_F, L_B, R_F, R_B
-static const uint8_t buttonPins = 2;
 
 void reg_ID() {
   strcpy(buf, "Register");
@@ -75,7 +74,6 @@ void setup() {
     pinMode(motorPins[motorpins], OUTPUT);
     motorpins++;
   }
-  pinMode(buttonPins, INPUT);
   Serial.begin(115200);
   while (!Serial)
     ;
@@ -210,7 +208,6 @@ void loop()
 {
   //for self-moving
   if (step != 2) { //for game start
-    pushButton();
     if (step == 0 && Dst1Pos.x != -1) { //for go to first point(may not be the treasure)
       if (check == 0) {
         double degree;
@@ -302,16 +299,6 @@ void loop()
   }
 }
 
-//detect button is triggered or not
-void pushButton()
-{
-  if (digitalRead(buttonPins) == HIGH)
-  {
-    backward(100);
-    left(250);
-    forward(100);
-  }
-}
 //setup treasure index
 int setIndex(int x, int y)
 {
