@@ -47,6 +47,7 @@ point::point(int x, int y)
 
 //Dst1 for first destination(may not be my treasure)
 point DstPos, MyPos, lighthouse[3];
+const point PosA(32, 32), PosB(544, 544);
 
 
 // Pin assignment
@@ -135,14 +136,14 @@ void askPos( void * parameter ) {
           recv_mod = strtok(recv_buf, ":");
           if (!strncmp(recv_mod, "POS", 3)) {
             recv_mod = strtok(NULL, "\n");
-            Serial.println(recv_mod);
+            //            Serial.println(recv_mod);
             sscanf(recv_mod, "(%d, %d)BaseA:%cBaseB:%cTowers:(%d, %d)(%d, %d)(%d, %d)Blood:%d", &MyPos.x, &MyPos.y, &BaseA, &BaseB, &lighthouse[0].x, &lighthouse[0].y, &lighthouse[1].x, &lighthouse[1].y, &lighthouse[2].x, &lighthouse[2].y, &hp);
           }
-          Serial.println("========================");
-          Serial.println(lighthouse[index].x);
-          Serial.println(lighthouse[index].y);
-          Serial.println(hp);
-          Serial.println("========================");
+          //          Serial.println("========================");
+          //          Serial.println(lighthouse[index].x);
+          //          Serial.println(lighthouse[index].y);
+          //          Serial.println(hp);
+          //          Serial.println("========================");
           DstPos.x = lighthouse[index].x;
           DstPos.y = lighthouse[index].y;
         }
@@ -213,16 +214,31 @@ void loop()
   double Degree;
   if (timetogo) { //for go to lighthouse
     point PrevPos(MyPos.x, MyPos.y);
-    forward(100, 255);
-    DstDir = atan2(DstPos.y - PrevPos.y, DstPos.x - PrevPos.x);
-    MyDir = atan2(MyPos.y - PrevPos.y, MyPos.x - PrevPos.x);
-    Degree = MyDir - DstDir;
 
-    if (DstPos.x == -1) {
+    //go to lighthouse
+    if (BaseA != 'O' && BaseB != 'O') {
       forward(100, 255);
-      freeze(50);
-      backward(100, 255);
-      return;
+      DstDir = atan2(DstPos.y - PrevPos.y, DstPos.x - PrevPos.x);
+      MyDir = atan2(MyPos.y - PrevPos.y, MyPos.x - PrevPos.x);
+      Degree = MyDir - DstDir;
+    } else if (BaseA == 'O') {
+      if (abs(MyPos.x - PosA.x) <= 50 && abs(MyPos.y - PosA.y) <= 50) { //if get to the Dst1
+        freeze(0);
+        return;
+      }
+      forward(100, 255);
+      DstDir = atan2(PosA.y - PrevPos.y, PosA.x - PrevPos.x);
+      MyDir = atan2(MyPos.y - PrevPos.y, MyPos.x - PrevPos.x);
+      Degree = MyDir - DstDir;
+    } else if (BaseB == 'O') {
+      if (abs(MyPos.x - PosB.x) <= 50 && abs(MyPos.y - PosB.y) <= 50) { //if get to the Dst1
+        freeze(0);
+        return;
+      }
+      forward(100, 255);
+      DstDir = atan2(PosB.y - PrevPos.y, PosB.x - PrevPos.x);
+      MyDir = atan2(MyPos.y - PrevPos.y, MyPos.x - PrevPos.x);
+      Degree = MyDir - DstDir;
     }
 
     if (Degree < -0.1 || Degree > PI + 0.1) {
